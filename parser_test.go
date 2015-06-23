@@ -10,7 +10,8 @@ import (
 var (
 	singleRecordString   = `({http://www.example.com/image1.png,http://www.example.com/image2.png},image/png,"a logo",123456)`
 	multipleRecordString = `{"({http://www.example.com/image1.png,http://www.example.com/image2.png},image/png,\"a logo\",123456)","({http://www.example.com/banner.png},image/png,\"a banner\",123456)"}`
-	byteSliceString      = `this is a test`
+	unquotedString       = `this is a test`
+	emptyArray           = `{}`
 )
 
 type record struct {
@@ -75,11 +76,79 @@ func TestByteSlice(t *testing.T) {
 
 	var r []byte
 
-	if !a.NoError(Unmarshal(byteSliceString, &r)) {
+	if !a.NoError(Unmarshal(unquotedString, &r)) {
 		return
 	}
 
-	a.Equal([]byte(byteSliceString), r)
+	a.Equal([]byte(unquotedString), r)
+}
+
+func TestByteSliceQuoted(t *testing.T) {
+	a := assert.New(t)
+
+	var r []byte
+
+	if !a.NoError(Unmarshal("\""+unquotedString+"\"", &r)) {
+		return
+	}
+
+	a.Equal([]byte(unquotedString), r)
+}
+
+func TestString(t *testing.T) {
+	a := assert.New(t)
+
+	var r string
+
+	if !a.NoError(Unmarshal(unquotedString, &r)) {
+		return
+	}
+
+	a.Equal(unquotedString, r)
+}
+
+func TestStringQuoted(t *testing.T) {
+	a := assert.New(t)
+
+	var r string
+
+	if !a.NoError(Unmarshal("\""+unquotedString+"\"", &r)) {
+		return
+	}
+
+	a.Equal(unquotedString, r)
+}
+
+func TestBadTarget(t *testing.T) {
+	a := assert.New(t)
+
+	var r interface{}
+
+	a.Error(Unmarshal("t", &r))
+}
+
+func TestNonPointerTarget(t *testing.T) {
+	a := assert.New(t)
+
+	var r string
+
+	a.Error(Unmarshal("t", r))
+}
+
+func TestBadSourceForString(t *testing.T) {
+	a := assert.New(t)
+
+	var s string
+
+	a.Error(Unmarshal(emptyArray, &s))
+}
+
+func TestBadSourceForByteSlice(t *testing.T) {
+	a := assert.New(t)
+
+	var s []byte
+
+	a.Error(Unmarshal(emptyArray, &s))
 }
 
 func TestGoodInt(t *testing.T) {
@@ -260,4 +329,84 @@ func TestTooLongUint64(t *testing.T) {
 	var i uint64
 
 	a.Error(Unmarshal("18446744073709551616", &i))
+}
+
+func TestBadSourceForInt(t *testing.T) {
+	a := assert.New(t)
+
+	var i int
+
+	a.Error(Unmarshal(emptyArray, &i))
+}
+
+func TestBadSourceForUint(t *testing.T) {
+	a := assert.New(t)
+
+	var i uint
+
+	a.Error(Unmarshal(emptyArray, &i))
+}
+
+func TestBadSourceForInt8(t *testing.T) {
+	a := assert.New(t)
+
+	var i int8
+
+	a.Error(Unmarshal(emptyArray, &i))
+}
+
+func TestBadSourceForUint8(t *testing.T) {
+	a := assert.New(t)
+
+	var i uint8
+
+	a.Error(Unmarshal(emptyArray, &i))
+}
+
+func TestBadSourceForInt16(t *testing.T) {
+	a := assert.New(t)
+
+	var i int16
+
+	a.Error(Unmarshal(emptyArray, &i))
+}
+
+func TestBadSourceForUint16(t *testing.T) {
+	a := assert.New(t)
+
+	var i uint16
+
+	a.Error(Unmarshal(emptyArray, &i))
+}
+
+func TestBadSourceForInt32(t *testing.T) {
+	a := assert.New(t)
+
+	var i int32
+
+	a.Error(Unmarshal(emptyArray, &i))
+}
+
+func TestBadSourceForUint32(t *testing.T) {
+	a := assert.New(t)
+
+	var i uint32
+
+	a.Error(Unmarshal(emptyArray, &i))
+}
+
+func TestBadSourceForInt64(t *testing.T) {
+	a := assert.New(t)
+
+	var i int64
+
+	a.Error(Unmarshal(emptyArray, &i))
+}
+
+func TestBadSourceForUint64(t *testing.T) {
+	a := assert.New(t)
+
+	var i uint64
+
+	a.Error(Unmarshal(emptyArray, &i))
 }
