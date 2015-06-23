@@ -151,6 +151,62 @@ func TestBadSourceForByteSlice(t *testing.T) {
 	a.Error(Unmarshal(emptyArray, &s))
 }
 
+func TestBadSourceForArray(t *testing.T) {
+	a := assert.New(t)
+
+	var l []string
+
+	a.Error(Unmarshal("x", &l))
+}
+
+func TestBadSourceForTuple(t *testing.T) {
+	a := assert.New(t)
+
+	var s struct{ A, B, C string }
+
+	a.Error(Unmarshal("x", &s))
+}
+
+func TestUnclosedArray(t *testing.T) {
+	a := assert.New(t)
+
+	var l []string
+
+	a.Error(Unmarshal("{a,b,c", &l))
+}
+
+func TestUnclosedTuple(t *testing.T) {
+	a := assert.New(t)
+
+	var s struct{ A, B, C string }
+
+	a.Error(Unmarshal("(a,b,c", &s))
+}
+
+func TestMismatchedArrayDelimiters(t *testing.T) {
+	a := assert.New(t)
+
+	var l []string
+
+	a.Error(Unmarshal("{a,b,c)", &l))
+}
+
+func TestMismatchedTupleDelimiters(t *testing.T) {
+	a := assert.New(t)
+
+	var s struct{ A, B, C string }
+
+	a.Error(Unmarshal("(a,b,c}", &s))
+}
+
+func TestUnfinishedTuple(t *testing.T) {
+	a := assert.New(t)
+
+	var s struct{ A, B, C string }
+
+	a.Error(Unmarshal("(a,b)", &s))
+}
+
 func TestGoodInt(t *testing.T) {
 	a := assert.New(t)
 
